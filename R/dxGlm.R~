@@ -1,0 +1,195 @@
+##' @name dx
+##' @title Diagnostics for binomial regression
+##'
+##' @rdname dx
+##' @export
+##'
+dx <- function(x, ...){
+    UseMethod("dx")
+}
+##' @rdname dx
+##' @aliases dx.glm
+##' @method dx glm
+##' @export
+##'
+##' @include genBinom.R
+##'
+##' @description
+##' Returns diagnostic measures for a binary regression
+##' model by covariate pattern
+##' @param x A model of class \code{glm}
+##' @return A \code{data.table}.
+##' There is one row per covariate pattern
+##' with at least one observation.
+##' These are sorted by \code{dBhat} (see below).
+##' \cr \cr
+##' The initial columns give all combinations of the predictor
+##' variables with at least one observation.
+##' \cr \cr
+##' Subsequent columns are labelled as follows:
+##' \item{n}{Number of observations with this covariate pattern}
+##' \item{prob}{Probability of this covariate pattern}
+##' \item{yhat}{Number of observations of \eqn{y=1}, \emph{predicted} by the model}
+##' \item{y}{\emph{Actual} number of observations of
+##' \eqn{y=1} from the data}
+##' \item{lev}{\dfn{Leverage}, the diagonal of the hat matrix used to
+##' generate the model; a measure of influence of this
+##' covariate pattern}
+##' \item{devR}{\dfn{Deviance residual},
+##' calculated by covariate pattern; a
+##' measure of influence of this covariate pattern}
+##' \item{PeR}{\dfn{Pearson residual}, calculated by covariate pattern; a
+##' measure of influence of this covariate pattern. Given by:
+##' \deqn{ \sqrt{obs}\sqrt{\frac{prob}{(1-prob)}}}{
+##'  obs^0.5 (prob/1-prob)^0.5}}
+##' \item{sPeR}{\dfn{Standardized Pearson residual} calculated by covariate
+##' pattern; a measure of influence of this covariate pattern. Given by:
+##' \deqn{ \frac{PeR}{\sqrt{(1-lev)}}}{
+##'  PeR.(1-lev)^0.5}}
+##' \item{dBhat}{\dfn{Change in Bhat}, the standardized difference between
+##' the original maximum likelihood estimates \bold{B} and that estimates
+##' with this covariate pattern excluded}
+##' \item{dXsq}{\dfn{Change in chi-square}, decrease in the value of
+##' Pearson chi-square statistic with this covariate pattern excluded.
+##' Given by:
+##' \deqn{sPeR^2}}
+##' \item{dDev}{\dfn{Change in deviance} \bold{D} with this covariate
+##' pattern excluded. Given by:
+##' \deqn{ \frac{dev^2}{(1-lev)}}{
+##' d^2/(1-lev)}}
+##' @note Values for the statistics are calculated by
+##' \emph{covariate pattern}.
+##' Different values may be obtained if
+##' calculated for each individual
+##' obervation (i.e. row in data frame).
+##' \cr \cr
+##' Generally, the values calculated by
+##' covariate pattern are preferred,
+##' particularly where no. observations are \eqn{>5}.
+##' @seealso \code{\link{plot.glm}}
+##' @examples
+##' d1 <- genBinomDt(model=FALSE)
+##' f1 <- stats::glm(y ~ I(x5^2)*x1 -1, family=binomial("logit"), data=d1)
+##' dx(f1)
+##'
+dx.glm <- function(x, ...,
+                   byCovPat=TRUE){
+    stopifnot(inherits(x, "glm"))
+    stopifnot(x$family$family == "binomial")
+    obs <- prob <- PeR <- lev <- sPeR <- NULL
+    devR <- dBhat <- PeR <- devR <- NULL
+    yhat <- y <- yhatY1 <- y0 <- yhatY0 <- NULL
+    c1 <- x$coefficients
+    ## get model matrix
+    mm1 <- data.table::data.table(stats::model.matrix(x))
+    p1 <- apply(mm1, 1, paste, collapse="")
+    mm1 <- mm1[, "p1" := p1]
+    mm1 <- mm1[order(p1), ]
+    mm1[, "p1" := NULL]
+    ## and model response
+    y1 <- stats::model.response(stats::model.frame(x))
+    y1 <- y1[order(p1)]
+    ## unique co-variate patterns
+    if(byCovPat) res1 <- unique(mm1)
+    ## logits given patterns and coefficients
+    l1 <- as.matrix(res1) %*% c1
+    ## inverse of link; generate probability
+    f1 <- x$family$linkinv
+    ## probability
+    res1[, "prob" := f1(l1), with=FALSE]
+    ## no. observations with each pattern
+    t1 <- tabulate(factor(p1))
+    res1[, "n" := t1, with=FALSE]
+    ## yhat =  predicted 'no. outcome=1' in each pattern
+    res1[, "yhat" := n * prob]
+    ## acutal no.
+    if(all(y1==0) | all(y1==1)){
+        warning("All responses ('outcomes') are either 0 or 1.")
+        res1[, "y" := xtabs(~ y1 + p1)[1, ], with=FALSE]
+    } else {
+        res1[, "y" := xtabs(~ y1 + p1)[2, ], with=FALSE]
+    }
+###
+###--------------------------------
+### make hat matrix
+### from Design matrix
+    ## no. observations fitting criteria
+    v1 <- res1[, n] * res1[, prob] * (1 - (res1[, prob]))
+    ## convert to diagonal matrix and take square root
+    v1 <- diag(v1)
+    v1s <- sqrt(v1)
+###
+    mm1 <- as.matrix(unique(mm1))
+    ## hat matrix
+    H1 <- v1s %*% mm1 %*%
+        solve(t(mm1) %*% v1 %*% mm1) %*% t(mm1) %*% v1s
+### hat diagonals = leverage
+    res1[, "lev" := diag(H1)]
+###
+    nr1 <- dim(res1)[1]
+### deviance residual by covariate pattern
+    devByCov <- function(j){
+        ## if y=0 for this covariate pattern
+	if (res1[j, y] ==0){
+            d1 <- log((1 - res1[j, prob]))
+            dev <- -sqrt(2 * res1[j, n] * abs(d1))
+            return(dev)
+            ## y = no. obs. for this covariate pattern
+        } else if (res1[j, y] == res1[j, n]){
+            d1 <- log((res1[j, prob]))
+            dev <- sqrt(2 * res1[j, n] * abs(d1))
+            return(dev)
+        } else {
+            d1 <- res1[j, y] / (res1[j, yhat])
+            d2 <- res1[j, y] * log(d1)
+            d3 <- ( res1[j, n] - res1[j, y]) /
+                (res1[j, n] * (1 - res1[j, prob]) )
+            d4 <- (res1[j, n] - res1[j, y]) * log(d3)
+            d5 <- sqrt(2 * (d2 + d4) )
+            ## sign is 1 if +ve, 0 if -ve
+            s1 <- sign(res1[j, y] - res1[j, yhat])
+            dev <- s1 * d5
+            return(dev)
+	}
+    }
+       res1[, "devR" := sapply(seq_along(nr1), devByCov)]
+### Pearson residual
+    Pear <- function(j){
+        ## if y=0 for this covariate pattern
+	if (res1[j, y] == 0){
+            Pr1 <- sqrt(res1[j, prob] / (1 - res1[j, prob]))
+            Pr2 <- -sqrt(res1[j, n])
+            res <- Pr1 * Pr2
+            return(res)
+        } else {
+            ## if y>0 for this covariate pattern
+            Pr1 <- res1[j, y] - res1[j, yhat]
+            Pr2 <- sqrt(res1[j, yhat] * (1 - (res1[j, prob])))
+            res <- Pr1 / Pr2
+            return(res)
+	}
+    }
+    res1[, "PeR" := sapply(seq_along(nr1), FUN=Pear)]
+### Standardized Pearson residuals
+    res1[, "sPeR" := PeR / sqrt(1 - lev)]
+###
+### dBhat
+### standardized difference in B
+### (maximum likelihood coefficients for paramaters)
+### without this pattern
+### (standardized by covariance matrix of B);
+### should be <1 if little influence on model
+###
+    res1[, "dBhat" := sPeR^2 * lev / (1 - lev)]
+###
+### dXsq
+### decrease in Pearson chi-square without this pattern,
+### should be <4 if little influence on model
+    res1[, "dXsq" := sPeR^2]
+### dDev
+### decrease in deviance without this pattern
+    res1[, "dDev" := devR^2 / (1 - lev)]
+    data.table::setkey(res1, dBhat)
+    class(res1) <- c("dxBinom", class(res1))
+    return(res1)
+}

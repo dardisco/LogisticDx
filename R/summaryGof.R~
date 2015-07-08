@@ -1,0 +1,55 @@
+##' @method summary logiGOF
+##' @S3method summary logiGOF
+##' @export
+summary.gof <- function(object, ...){
+    stopifnot(inherits(object, "gof"))
+    m1 <- matrix(c(object$chiPearCov[[1]],
+                   object$chiPearIndiv[[1]],
+                   object$chiPearTab[[1]],
+                   object$chiDevCov[[1]],
+                   object$chiDevIndiv[[1]],
+                   object$chiDevTab[[1]]),
+                 ncol=2, nrow=3)
+    dimnames(m1) <- list(c("Cov_pat",
+                           "Indiv",
+                           "Table"),
+                         c("Pearson",
+                           "Dev"))
+    m2 <- matrix(c(object$OsRo[[1]],
+                   object$HosLem[[1]],
+                   object$modHosLem[[1]],
+                   object$CesHou[[1]],
+                   object$Stuk[[1]]),
+                 ncol=5)
+    dimnames(m2) <- list(c("pVal"),
+                         c("OsRo",
+                           "HosLem",
+                           "modHosLem",
+                           "CesHou",
+                           "Stuk"))
+    m3 <- matrix(c(object$PRsq[[1]],
+                   object$ssR2[[1]],
+                   object$llR2[[1]]),
+                 ncol=3)
+    dimnames(m3) <- list(c("Rsq"),
+                         c("Pearson",
+                           "sum_of_squares",
+                           "log_lik"))
+    m4 <- matrix(c(object$roc[[1]][1],
+                   object$roc[[2]][1],
+                   object$roc[[2]][3]),
+                 ncol=3)
+    dimnames(m4) <- list(c("AUC"),
+                         c("", "lower_95%", "upper_95%"))
+    ###
+    cat("\n Chi-square tests; low p-value indicates predictors significant \n\n")
+    print(m1)
+    cat("\n Test for model fitting; low p-value indicates model is a poor fit \n\n")
+    print(m2)
+    cat("\n Pseudo-R^2 measures \n\n")
+    print(m3)
+    cat("\n Area under receiver operating characteristic \n\n")
+    print(m4)
+    cat("\n")
+}
+

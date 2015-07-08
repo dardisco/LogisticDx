@@ -1,0 +1,278 @@
+##' @name gof
+##' @title Goodness of fit for binomial regression
+##'
+##' @rdname gof
+##' @export
+##'
+gof <- function(x, ...){
+    UseMethod("gof")
+}
+##' @rdname gof
+##' @aliases gof.glm
+##' @method gof glm
+##' @export
+##'
+##' @include stukel.R
+##' @include dxGlm.R
+##' @include genBinom.R
+##'
+##' @param x A model of class \code{glm}
+##' @param ... Additional arguments when plotting ROC. See
+##' \cr
+##' \code{?pROC::roc.default}
+##' @param g No. groups (quantiles) into which to split observations for
+##' Hosmer-Lemeshow and modified Hosmer-Lemeshow tests.
+##' @return A \code{list} of class \code{logiGOF} with the following items:
+##' \item{chiPearCov}{Pearsons chi-square, calculated by \emph{covariate group},
+##' with \eqn{p} value and interpretation}
+##' \item{chiPearIndiv}{Pearsons chi-square, calculated by \emph{individual
+##' observation}, with \eqn{p} value and interpretation}
+##' \item{chiPearTab}{Pearsons chi-square, calculated by \emph{table of covariate
+##' patterns by outcome}, with \eqn{p} value and interpretation}
+##' \item{OsRo}{Osius & Rojek test of the logistic link, with \eqn{p} value and
+##' interpretation}
+##' \item{chiDevCov}{Deviance chi-square, calculated by \emph{covariate group},
+##' with \eqn{p} value and interpretation}
+##' \item{chiDevIndiv}{Deviance chi-square, calculated by \emph{individual
+##' observation}, with \eqn{p} value and interpretation}
+##' \item{chiDevTab}{Deviance chi-square, calculated by \emph{table of covariate
+##' patterns by outcome}, with \eqn{p} value and interpretation}
+##' \item{covPatTab}{Matrix of covariance patterns, used to calculate above
+##' chi-square tests of Pearson residuals and deviance}
+##' \item{HosLem}{Hosmer & Lemeshow goodness of fit test, with \code{g}
+##' quantile groups,with \eqn{p} value and interpretation}
+##' \item{modHosLem}{modified Hosmer & Lemeshow goodness of fit test, with
+##' \code{g} quantile groups, with \eqn{p} value and interpretation}
+##' \item{CesHou}{le Cessie, van Houwelingen, Copas & Hosmer unweighted sum
+##' of squares test for global goodness of fit, with \eqn{p} value and interpretation}
+##' \item{Stuk}{Stukels test of the appropriateness of the logistic link,
+##' with \eqn{p} value and interpretation}
+##' \item{PR2}{Pearsons R^2, correlation of observed outcome with predicted}
+##' \item{ssR2}{Linear regression-like sum-of-squares R^2, using covariate
+##' patterns}
+##' \item{llR2}{Log-likelohood based R^2, calculated by covariate group}
+##' \item{ROC}{Area under the Receiver Operating Curve, with 95\% CI by
+##' method of DeLong}
+##'
+##' @note A \code{summary} method is available
+##' \cr \cr Warning: Will fail if cannot generate a hat matrix for the model
+##' using \code{logiDx}
+##'
+##' @author Modified Hosmer & Lemeshow goodness of fit test:
+##' adapted from existing work by Yongmei Ni
+##' @seealso \code{\link{dxBinom}}
+##' @keywords htest
+##' @examples
+##'
+##' set.seed(1)
+##' m1 <- genBinomDf(n=100, model=TRUE)$model
+##' g1=gof(m1)
+##'
+gof.glm <- function(x, ..., g=10){
+    stopifnot(inherits(x, "glm"))
+    stopifnot(family(x)$family=="binomial")
+    ## for R CMD check
+    PeR <- devR <- obs <- prob <- yhat <- y <- NULL
+    yhatY1 <- y0 <- yhatY0 <- NULL
+    dx1 <- dx(x)
+### Pearson residuals by group
+### (large S for Sum)
+    PrSj <- dx1[, sum(PeR^2)]
+    DevSj <- dx1[, sum(devR^2)]
+###
+### Pearson residuals by individual subject
+    PrSi <- sum(residuals(x, type="pearson")^2)
+### same as Residual Deviance from summary(model)
+    DevSi <- sum(residuals(x, type="deviance")^2)
+### chi-square tests
+### p (by chisq) <0.05 = reject H0,
+### i.e. coefficients are significant predictors
+###
+### degrees freedom = no. covariate patterns (with any observations)
+###  - no. predictors in equation +1
+    degf1 <- dx1[, sum(n)] - (length(x$coefficients) - 1) - 1
+### by covariate pattern
+    chiPearCov <- list(pValue = 1 - stats::pchisq(PrSj, degf1),
+                       interpret = c("Pearsons chi-square, calculated by covariate group",
+                       "Low p value (by chisq): reject H0, i.e. coefficients are significant predictors"))
+    chiPearCov <- 1 - stats::pchisq(PrSj, degf1)
+    attr(chiPearCov, "interpret") <- c("Pearsons chi-square, calculated by covariate group",
+                       "Low p value (by chisq): reject H0, i.e. coefficients are significant predictors")
+    chiDevCov <- list(pValue = 1 - pchisq(DevSj, degf1),
+                      interpret = c("Deviance chi-square, calculated by covariate group",
+                      "Low p value (by chisq): reject H0, i.e. coefficients are significant predictors") )
+###
+### by individual
+    chiPearIndiv <- list(pValue = 1 - pchisq(PrSi, df.residual(x)),
+                         interpret = c("Pearsons chi-square, calculated by observation",
+                         "Low p value (by chisq): reject H0, i.e. coefficients are significant predictors") )
+    chiDevIndiv <- list(pValue = 1 - pchisq(DevSi, df.residual(x)),
+                        interpret = c("Deviance chi-square, calculated by observation",
+                        "Low p value (by chisq): reject H0, i.e. coefficients are significant predictors") )
+###
+### the above doesn't work well as nrow(dx1) approaches nrow(model$data)
+### so instead use contingency table
+    dx2 <- dx1[, list(n, prob, yhat, y, n * (1 - prob), n - y)]
+    setnames(dx2, c("n", "prob", "yhatY1", "y1", "yhatY0", "y0"))
+###
+### manual chi-sq test
+    chi1 <- dx2[, sum( (y1 - yhatY1^2) / yhatY1)] +
+        dx2[, sum( (y0 - yhatY0^2) / yhatY0)]
+    degFree1 <- dim(dx2)[1] - dim(dx2)[2]
+    chiPearTab <- list(pValue = 1 - pchisq(chi1, degFree1),
+                       interpret=c("Pearsons chi-square, calculated from table of covariate patterns by outcome",
+                       "Low p value (by chisq): reject H0, i.e. coefficients are significant predictors") )
+###
+    gSq1 <- dx2[, 2 * sum( y1 * log(y1 / yhatY1), na.rm=TRUE )] +
+        dx2[, 2 * sum( y0 * log(y0 / yhatY0), na.rm=TRUE )]
+    chiDevTab <- list(pValue = 1 - pchisq(gSq1, degFree1),
+                      interpret =c("Deviance chi-square, calculated from table of covariate patterns by outcome",
+                      "Low p value (by chisq): reject H0, i.e. coefficients are significant predictors") )
+###
+### Hosmer Lemeshow GOF test
+### p <0.05 reject null hypothesis that the model is a good fit; i.e. model is a poor fit
+    hosmerLem <- function(y, yhat, g) {
+        cutYhat <- cut(yhat,
+                       breaks=stats::quantile(yhat, probs=seq(0, 1, 1/g)),
+                       include.lowest=TRUE)
+        ## n1 = observed
+        n1 <- xtabs(cbind(1 - y, y) ~ cutYhat)
+        ## E1 = expected
+        E1 <- stats::xtabs(cbind(1 - yhat, yhat) ~ cutYhat)
+        chisq1 <- sum((n1 - E1)^2 / E1)
+        pVal1 <- 1 - stats::pchisq(chisq1, g - 2)
+        return(pVal1)
+    }
+### outcome
+    y1 <- model.response(model.frame(x))
+    HosLem <- list(pValue=hosmerLem(
+                   y=y1,
+                   yhat=x$fitted.values,
+                   g=g),
+                   interpret=c(
+                   paste0("Hosmer & Lemeshow goodness of fit test, with g=",g," quantile groups"),
+                   "Low p-value: reject H0 that the model is a good fit; i.e. model is a poor fit",
+                   "Note may be overly cautions in datasets with large no. observations"))
+###
+### modified Homser-Lemeshow test
+    modHL <- function (x, g) {
+        xcuts <- stats::quantile(1:nrow(x$data),
+                                 prob=seq(0.1:1, by=1 / g))
+        group1 <- cut(1:nrow(x$data), xcuts, labels=FALSE)
+        group1 <- ifelse(is.na(group1), 0, group1)
+        group1 <- as.factor(group1)
+        r1 <- resid(x)[order(fitted(x))]
+        a1 <- stats::anova(stats::lm(r1 ~ group1))
+        pVal1 <- lapply(a1, "[[", 1)$"Pr(>F)"
+        return(pVal1)
+    }
+    modHosLem <- list (pValue=modHL(x, g=g),
+                       interpret=c(
+                       paste0("Modified Hosmer & Lemeshow goodness of fit test, with g=",g," quantile groups"),
+                       "Low p-value: reject H0 that the model is a good fit; i.e. model is a poor fit"))
+###
+### le Cessie and Houwelingen test
+### p<0.05 = reject null hypothesis that the true probabilities are those specified by the model; i.e. model is not a good fit
+### All predictors
+    f2 <- rms::lrm(x$formula, data=x$data, x=TRUE, y=TRUE)
+### uses rms:::residuals.lrm
+    CesHou <- list(pValue=residuals(f2, "gof")[[5]],
+                   interpret=c("le Cessie, van Houwelingen, Copas & Hosmer unweighted sum of squares test for global goodness of fit",
+                   "Low p-value: reject H0 that the model is a good fit; i.e. model is a poor fit"))
+###
+### Osius & Rojek test
+### p < 0.05 reject null hypothesis that the true probabilities are those specified by the model; i.e. model is not a good fit
+    v1 <- dx2[, yhatY1 * (1 - prob)]
+    c1 <- (1 - 2 * dx2[, prob]) / v1
+    l1 <- length(x$coefficients)-1
+    m3 <- as.matrix(dx1[, seq.int(l1), with=FALSE])
+### weighted least squares regression
+    lm1 <- stats::lm(c1 ~ m3, weights=v1)
+    RSS1 <- sum(lm1$residuals ^ 2)
+### A1 = correction factor for the variance
+    A1 <- 2 * (dim(dx1)[1] - sum(1 / dx2[, n]))
+    Xsq1 <- sum( dx1[, y - yhat] ^ 2 / v1  )
+    z1 <- ( Xsq1 - ( dim(dx1)[1] - l1 - 1) ) / sqrt(A1 + RSS1)
+    OsRo <- list (pValue=1 - pnorm(z1),
+                  interpret=c("Osius & Rojek goodness of fit test",
+                  "Significance of Pearson chi-square by normal approximation (for large samples)",
+                  "Low p-value: reject H0 that the model is a good fit; i.e. model is a poor fit"))
+### Stukels test
+    Stuk <- list(pValue=unname(stukel(x)[[3]]),
+                 interpret=c("Stukels goodness of fit test",
+                 "Low p-value: reject H0 that the logistic model is an appropriate link; i.e. consider alternative link"))
+###
+### pseudo R^2 tests
+###
+### Pearson r^2 correlation of observed outcome with predicted probability
+    ybar <- dx1[, sum(y) / sum(n)]
+    pR2a <- sum(dx1[, y - (n * ybar)] * dx1[, (yhat - (n * ybar)) ])^2
+    pR2b <- sum(dx1[, (y - ybar) ^ 2]) * sum(dx1[, yhat  - (n*ybar)^2])
+    PRsq <- list(Pearson_Rsq = pR2a/pR2b,
+                interpret="Correlation of observed outcome with predicted")
+###
+### linear regression-like sum of squares R^2, using covariate patterns
+    ssR2a <- sum(dx1[, (y - yhat)^ 2])
+    ssR2b <- sum(dx1[, (y - n * ybar)^ 2])
+    ssR2 <- list(sum_of_squares_Rsq=1 - (ssR2a / ssR2b),
+                 interpret="Linear regression-like sum of squares R^2, using covariate patterns")
+###
+### log-likelihood based R^2
+###
+### intercept-only model
+    fmla <- as.formula(y ~ 1)
+    f0 <- glm (fmla, family=binomial("logit"), data=x$data)
+### use index [1] to return numeric value
+    llr2 <- ( (stats::logLik(f0) - stats::logLik(x)) /
+             (stats::logLik(f0) - (stats::logLik(x) + 0.5 * x$deviance)) )[1]
+    llR2 <- list(log_likelihood_Rsq=llr2,
+                 interpret="Log-likelohood based R^2, calculated by covariate group")
+###
+### ROC curve
+    ## plot
+    ## get name of y/ outcome variable from formula
+    r1 <- pROC::roc.default(response=x$data[[ncol(x$data)]],
+                            predictor=x$fitted.values,
+                            ci=TRUE, percent=TRUE, ...)
+    ## 0.5 = chance, aim >0.7
+    pROC::plot.roc.roc(r1, print.auc=TRUE, grid=TRUE,
+                       print.auc.cex=0.8, main="ROC curve")
+### AUC and CI
+    ## y/outcome variable from formula is last column in model$data
+    ## [13:14] gets area under curve and confidence interval from roc
+    roc1 <- r1[13:14]
+    roc <-list(AUC=as.vector(r1$auc),
+               CI=as.vector(r1$ci)[c(1, 3)])
+###
+    res <- list(chiPearCov=chiPearCov,
+                chiPearIndiv=chiPearIndiv,
+                chiPearTab=chiPearTab,
+                OsRo=OsRo,
+                chiDevCov=chiDevCov,
+                chiDevIndiv=chiDevIndiv,
+                chiDevTab=chiDevTab,
+                covPatTab=dx2[, list(n, yhatY1, y1, yhatY0, y0)],
+                HosLem=HosLem,
+                modHosLem=modHosLem,
+                CesHou=CesHou,
+                Stuk=Stuk,
+                PRsq=PRsq,
+                ssR2=ssR2,
+                llR2=llR2,
+                roc=roc)
+    class(res) <- c("gof", class(res))
+    setattr(res, "groups", g)
+    return(res)
+}
+###
+###----------------------------------------
+### Stukels test
+### g1 <- log( model$fitted.values /(1-model$fitted.values ) ) # logit for each covariate pattern
+### z1 <- 0.5 * g1^2 * ( model$fitted.values >0.5 )
+### z2 <- -0.5 * g1^2 * ( model$fitted.values <0.5 )
+### should use Raos Score test if possible here,
+### otherwise LRT; need recent version of package("stats"), written 2012
+### f1a <- update(model, ~z1)
+### stats::anova.glm(model, f1a, test="LRT")
+### f1a <- update(model, ~z2)
+### stats::anova.glm(model, f1a, test="LRT")

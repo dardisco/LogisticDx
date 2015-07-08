@@ -1,0 +1,81 @@
+##' @name stukel
+##' @export
+##'
+##' @include genBinom.R
+##'
+##' @title Stukels test of the logistic link
+##'
+##' @description
+##' Calculates Stukels test for a logistic regression model.
+##' \cr \cr
+##' This determines the appropriateness of the logistic link.
+##' \cr \cr
+##' Two new covariates, z1 and z2 are generated such that
+##' \deqn{ z1=0.5*logit^2*I(pi>=0.5), z2=-0.5*logit^2*I(pi<=0.5) }
+##' where \eqn{I(arg)=1} where arg is true and \eqn{=0} where false.
+##' \cr \cr
+##' Tests if significant
+##' change occurs in the model with the addition of these coefficients.
+##'
+##' @param object An object of class \bold{glm}
+##' @param alternative add both \eqn{z1} and \eqn{z2} to model or just
+##' one of the above
+##' @return A list with the following elemens:
+##' \item{statistic}{value of statistic}
+##' \item{parameter}{degrees of freedom}
+##' \item{p.value}{if \eqn{<0.05} suggests should accept null hypothesis that
+##' logistic model is incorrect for the data}
+##' \item{alternative}{alternative}
+##' \item{method}{method}
+##' \item{data.name}{name of object}
+##' \item{allstat}{statistics for all tests}
+##' \item{allpar}{degrees of freedom}
+##' \item{allpval}{all p values}
+##' @author Brett Presnell
+##' @references
+##' \href{http://http://www.stat.ufl.edu/~presnell/Courses/sta7249-2008sp/R/Src/stukel.R}{University of Florida}
+##' @keywords htest
+##' @examples
+##' set.seed(1)
+##' m1 <- genBinomDf(b=3,f=0,c=0,n=50)$model
+##' stukel(m1)
+##'
+stukel <- function(object, alternative = c("both", "alpha1", "alpha2")) {
+    DNAME <- deparse(substitute(object))
+    METHOD <- "Stukel's test of the logistic link"
+    alternative <- match.arg(alternative)
+    eta <- predict(object, type = "link")
+    etasq <- 0.5 * eta * eta
+### is positive?
+    etapos <- eta > 0
+    dv <- matrix(0, nrow = length(eta), ncol = 2)
+    dv[etapos, 1] <- etasq[etapos]
+    dv[!etapos, 2] <- - etasq[!etapos]
+    colnames(dv) <- c("z1", "z2")
+    oinfo <- stats::vcov(object)
+### qr decomposition of matrix
+    oX <- qr.X(object$qr)
+    ImH <- - oX %*% oinfo %*% t(oX)
+    diag(ImH) <- 1 + diag(ImH)
+    wdv <- sqrt(object$weights) * dv
+    qmat <- t(wdv) %*% ImH %*% wdv
+    sc <- apply(dv * (object$weights * residuals(object, "working")), 2, sum)
+    allstat <- c(sc * sc / diag(qmat), sc %*% solve(qmat) %*% sc)
+    names(allstat) <- c("alpha1", "alpha2", "both")
+    allpar <- c(1,1,2)
+    names(allpar) <- names(allstat)
+    allpval <- pchisq(allstat, allpar, lower.tail=FALSE)
+    STATISTIC <- allstat[alternative]
+    PARAMETER <- allpar[alternative]
+    names(PARAMETER) <- "df"
+    PVAL <- allpval[alternative]
+    names(allpar) <- rep("df", 3)
+    structure(list(statistic = STATISTIC,
+                   parameter = PARAMETER,
+                   p.value = PVAL,
+                   alternative = alternative,
+                   method = METHOD, data.name = DNAME,
+                   allstat = allstat, allpar = allpar, allpval = allpval
+                   ),
+              class = "htest")
+}

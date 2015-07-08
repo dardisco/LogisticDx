@@ -1,0 +1,69 @@
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{dxPlots}
+\documentclass{article}
+
+\usepackage[]{graphicx}
+\usepackage[]{color}
+\usepackage{framed} 
+%%% recommended with knitr
+\usepackage{alltt}
+\usepackage{mathtools}
+\usepackage[sc]{mathpazo}
+\usepackage{geometry}
+%% for large numbers of floats
+\usepackage{morefloats}
+%%% to keep floats in same section
+\usepackage[section]{placeins}
+%%% for tables > 1 page
+\usepackage{longtable}
+
+\begin{document}
+
+% knitr chunks
+<<setup, include=FALSE>>=
+library("knitr")
+### Set global chunk options
+opts_chunk$set(eval=TRUE,
+   ## text results
+   echo=TRUE,
+   results=c('markup', 'asis', 'hold', 'hide')[1],
+   collapse=FALSE,
+   warning=TRUE, message=TRUE, error=TRUE,
+   split=FALSE, include=TRUE, strip.white=TRUE,
+   ## code decoration
+   tidy=FALSE, prompt=FALSE, comment='##',
+   highlight=TRUE, size='normalsize',
+   background=c('#F7F7F7', colors()[479], c(0.1, 0.2, 0.3))[1],
+   ## cache
+   cache=FALSE,
+   ## plots
+   fig.path=c('figure', 'figure/minimal-')[1],
+   fig.keep=c('high', 'none', 'all', 'first', 'last')[1],
+   fig.align=c('center', 'left', 'right', 'default')[1],
+   fig.show=c('hold', 'asis', 'animate', 'hide')[1],
+   dev=c('pdf', 'png', 'tikz')[1],
+   fig.width=7, fig.height=7, #inches
+   fig.env=c('figure', 'marginfigure')[1],
+   fig.pos=c('', 'h', 't', 'b', 'p', 'H')[1])
+### Set R options
+options(formatR.arrow=TRUE, width=60)
+@
+
+Here is a minimal example showing the diagnostic plots.
+
+<<plots>>=
+library("dxBinom")
+## H&L. Table 4.9. Figures 5.5-5.8. Pages 177-180.
+data(uis)
+uis <- within(uis, {
+    NDRGFP1 <- 10 / (NDRGTX + 1)
+    NDRGFP2 <- NDRGFP1 * log((NDRGFP1 + 1) / 10)
+})
+summary(g1 <- glm(DFREE ~ AGE + NDRGFP1 + NDRGFP2 + IVHX +
+                  RACE + TREAT + SITE +
+                  AGE:NDRGFP1 + RACE:SITE,
+                  family=binomial, data=uis))
+plot(g1, knitr=TRUE)
+@ 
+
+\end{document}
