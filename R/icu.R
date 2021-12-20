@@ -97,8 +97,8 @@
 #' @keywords datasets
 #'
 #' @source
-#' \href{ftp://ftp.wiley.com/public/sci_tech_med/logistic}{
-#'       Wiley FTP}
+#' Originally taken from \bold{H&L 2nd ed.} via their publishers site at ftp://ftp.wiley.com/public/sci_tech_med/logistic
+#'
 #' @references
 #' \bold{H&L 2nd ed.} Page 22, Section 1.6.1.
 #'
@@ -115,16 +115,14 @@
 #' an international cohort of intensive care unit patients.
 #' \emph{Journal of the American Medical Association}.
 #' \bold{270}(20):2478--2486.
-#' \href{http://dx.doi.org/10.1001/jama.1993.03510200084037}{
-#'       JAMA (paywall)}
+#' \doi{10.1001/jama.1993.03510200084037}
 #'
 #' Lemeshow S, Le Gall J 1994.
 #' Modeling the severity of illness of ICU patients:
 #' a systems update.
 #' \emph{Journal of the American Medical Association}.
 #' \bold{272}(13):1049--1055.
-#' \href{http://dx.doi.org/10.1001/jama.1994.03520130087038}{
-#'       JAMA (paywall)}
+#' \doi{10.1001/jama.1994.03520130087038}
 NULL
 
 

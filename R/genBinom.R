@@ -199,15 +199,18 @@ genBinomDt <- function(b=2L, f=2L, c=1L, n=20L,
         if(!f==0){
             for (i in (b+1L) : (b+f)){
                 if (asFactor){
-                    data.table::set(dt1, j=i, value=as.factor(sample(x=seq.int(1L, nlf),
-                                              size=n,
-                                              replace=TRUE))
-                                    )
+                    data.table::set(dt1,
+                                    j=i,
+                                    value=as.factor(
+                                        sample(x=seq.int(1L, nlf),
+                                               size=n,
+                                               replace=TRUE)))
                 } else {
-                    data.table::set(dt1, j=i, value=sample(x=seq.int(1L, nlf),
-                                              size=n,
-                                              replace=TRUE)
-                                    )
+                    data.table::set(dt1,
+                                    j=i,
+                                    value=sample(x=seq.int(1L, nlf),
+                                                 size=n,
+                                                 replace=TRUE))
                 }
             }
         }

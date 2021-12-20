@@ -56,8 +56,7 @@
 #' @keywords datasets
 #'
 #' @source
-#' \href{ftp://ftp.wiley.com/public/sci_tech_med/logistic}{
-#'       Wiley FTP}
+#' Originally taken from \bold{H&L 2nd ed.} via their publishers site at ftp://ftp.wiley.com/public/sci_tech_med/logistic
 #' @references
 #' \bold{H&L 2nd ed.} Page 265. Table 8.1.
 #'
@@ -75,13 +74,12 @@
 #' relationship to screening mammography utilization.
 #' \emph{Journal of the American Geriatrics Society}
 #' \bold{40}(8):774--778.
-#' \href{http://dx.doi.org/10.1111/j.1532-5415.1992.tb01848.x}{
-#'       Wiley (paywall)}
+#' \doi{10.1111/j.1532-5415.1992.tb01848.x}
 #'
 #' Zapka JG, Hosmer D, Costanza ME, Harris DR, Stoddard A 1992.
 #' Changes in mammography use: economic, need and service factors.
 #' \emph{American Journal of Public Health}
 #' \bold{82}(10):1345--1351.
-#' \href{http://dx.doi.org/10.2105/AJPH.82.10.1345}{AJPH (free)}
+#' \doi{10.2105/AJPH.82.10.1345}
 #'
 NULL

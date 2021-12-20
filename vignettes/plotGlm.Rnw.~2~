@@ -22,7 +22,7 @@
 \begin{document}
 
 \title{plot.glm}
-\author{Chris Dardis}
+\author{C Dardis}
 \maketitle
 
 % knitr chunks
@@ -91,8 +91,8 @@ p <- seq(5)
 h <- c(1, 3, 1.5, 3, 1)
 plot(p, h, type="b", 
      col="blue", axes=FALSE,
-     xlab="Probability",
-     ylab="Size of statistic")
+     xlab="probability",
+     ylab="size of statistic")
 axis(1, at=p, labels=c("<0.1", "0.1-0.3", "0.3-0.7", "0.7-0.9", ">0.9"))
 axis(2, at=c(1, 1.5, 2, 3), labels=c("low", "low-med", "med", "high"))
 dChisq <- c(2, 1.5, 2)
@@ -105,14 +105,14 @@ dBhat <- c(1, 3, 2, 3, 1)
 points(p, dBhat, type="b", col="red")
 legend(2.5, y=1.4, legend=c("h", "dChisq", "dBhat"), 
        fill=c("blue", "green", "red"))
-mtext("Probability vs. Size of statistic")
+mtext("Probability vs. size of statistic")
 @ 
 
 \section{Sample graphical output from \texttt{plot.glm}}
 
 <<plots>>=
 library("LogisticDx")
-print("H&L 2nd ed. Table 4.9. Figures 5.5-5.8. Pages 177-180.")
+## H&L 2nd ed. Table 4.9. Figures 5.5-5.8. Pages 177-180.
 data(uis)
 uis <- within(uis, {
     NDRGFP1 <- 10 / (NDRGTX + 1)

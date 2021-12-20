@@ -19,23 +19,23 @@
 #' \describe{
 #'  \item{ID}{Identification code.}
 #'  \item{CAPSULE}{Tumor penetration of prostatic capsule?
-#'                 (\code{factor}):
+#'                 (a \code{factor}):
 #'   \describe{
 #'    \item{0}{no}
 #'    \item{1}{yes}}}
 #'  \item{AGE}{Age (years).}
-#'  \item{RACE}{Race (\code{factor}):
+#'  \item{RACE}{Race (a \code{factor}):
 #'   \describe{
 #'    \item{1}{white}
 #'    \item{2}{black}}}
-#'  \item{DPROS}{Digital rectal exam (\code{factor}):
+#'  \item{DPROS}{Digital rectal exam (a \code{factor}):
 #'   \describe{
 #'    \item{1}{no nodule}
 #'    \item{2}{unilobar nodule (left)}
 #'    \item{3}{unilobar nodule (right)}
 #'    \item{4}{bilobar nodule}}}
 #'  \item{DCAPS}{Capsular involvement on rectal exam?
-#'                 (\code{factor}):
+#'                 (a \code{factor}):
 #'   \describe{
 #'    \item{0}{no}
 #'    \item{1}{yes}}}
@@ -48,8 +48,7 @@
 #' @keywords datasets
 #'
 #' @source
-#' \href{ftp://ftp.wiley.com/public/sci_tech_med/logistic}{
-#'       Wiley FTP}
+#' Originally taken from \bold{H&L 2nd ed.} via their publishers site at ftp://ftp.wiley.com/public/sci_tech_med/logistic
 #' @references
 #' \bold{H&L 2nd ed.} Page 25. Section 1.6.3.
 #'

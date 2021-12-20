@@ -59,7 +59,7 @@
 #' \code{\link{OR}}
 #'
 #' @source
-#' \href{ftp://ftp.wiley.com/public/sci_tech_med/logistic}{Wiley FTP}
+#' Originally taken from \bold{H&L 2nd ed.} via their publishers site at ftp://ftp.wiley.com/public/sci_tech_med/logistic
 #' @references
 #' \bold{H&L 2nd ed.} Page 24. Section 1.6.2.
 #'

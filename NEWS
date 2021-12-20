@@ -1,3 +1,4 @@
+Dec 2021: Fixed function printSigGlm as this was printing correctly, which appears to be due to an update in stats::printCoefmat
 Jul 2015: Version 0.2 of LogisticDx complete.
 This is an extensive re-write with numerous new functions and datasets.
 May 2014: Version 0.1 of LogisticDx complete.

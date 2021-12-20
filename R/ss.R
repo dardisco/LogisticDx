@@ -125,38 +125,28 @@ ss <- function(x, ...){
 #' @references Whitemore AS (1981).
 #' Sample Size for Logistic Regression with Small Response Probability.
 #' \emph{Journal of the American Statistical Association}. \bold{76}(373):27-32.
-#' \href{http://dx.doi.org/10.2307/2287036}{
-#'       JASA (paywall)}
-#' \cr
-#' JSTOR (free)
-#' \cr
-#' http://www.jstor.org/stable/2287036
+#' \doi{10.2307/2287036}
+#' Also available at JSTOR at https://www.jstor.org/stable/2287036
 #' 
 #' @references Hsieh FY (1989).
 #' Sample size tables for logistic regression.
 #' \emph{Statistics in Medicine}. \bold{8}(7):795-802.
-#' \href{http://dx.doi.org/10.1002/sim.4780080704}{
-#'       Wiley (paywall)}.
-#' \href{http://www.statpower.net/Content/312/Handout/Hsieh\%281989\%29.pdf}{
-#'       statpower (free)}.
+#' \doi{10.1002/sim.4780080704}
+#' Also available at \href{http://www.statpower.net/Content/312/Handout/Hsieh\%281989\%29.pdf}{statpower (free)}.
 #' 
 #' @references Fleiss J (2003).
 #' \emph{Statistical methods for rates and proportions. 3rd ed}.
 #' John Wiley, New York.
-#' \href{dx.doi.org/10.1002/0471445428}{
-#'       Wiley (paywall)}.
-#' \href{http://books.google.com/books?isbn=1118625617}{
+#' \doi{10.1002/0471445428}
+#' Also available at \href{https://books.google.com/books?isbn=1118625617}{
 #'       Google books (free preview)}.
 #'
 #' @references Peduzzi P, Concato J, Kemper E,
 #' Holford T R, Feinstein A R (1996).
 #' A simulation study of the number of events
 #' per variable in logistic regression analysis.
-#' \emph{Journal of clinical epidemiology}. \bold{49}(12):1373-79.
-#' \href{http://dx.doi.org/10.1016/S0895-4356(96)00236-3}{
-#'       JCE (paywall)}.
-#' \href{http://www.researchgate.net/publication/14236358}{
-#'       ResearchGate (free)}.
+#' \emph{Journal of Clinical Epidemiology}. \bold{49}(12):1373-79.
+#' \doi{10.1016/S0895-4356(96)00236-3}
 #' 
 #' @keywords htest
 #' 
@@ -174,14 +164,14 @@ ss <- function(x, ...){
 #'     AGES <- (AGE - 32) / 6
 #'     NDRGTXS <- (NDRGTX - 5) / 5
 #' })
-#' ## Page 343.
+#' ## H&L 2nd ed. Section 8.5. Page 343.
 #' ## results slightly different due to rounding
 #' g1 <- glm(DFREE ~ AGES, data=uis, family=binomial) 
 #' ss(g1, coeff="AGES", std=FALSE, OR=1.5)
-#' ## Table 8.37. Page 344.
+#' ## H&L 2nd ed. Section 8.5. Table 8.37. Page 344.
 #' summary(g1 <- glm(DFREE ~ AGES + NDRGTXS + IVHX + RACE + TREAT,
 #'                   data=uis, family=binomial))
-#' ## Page 345.
+#' ## H&L 2nd ed. Section 8.5. Page 345.
 #' ## results slightly different due to rounding
 #' ss(g1, coeff="AGES", std=FALSE, OR=1.5)
 #' ss(g1, coeff="TREATlong", std=FALSE, OR=1.5)

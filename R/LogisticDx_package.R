@@ -3,8 +3,8 @@
 #' \tabular{ll}{
 #'  Package: \tab LogisticDx \cr
 #'  Type: \tab Package \cr
-#'   Version: \tab 0.2 \cr
-#'  Date: \tab 2015-07-01 \cr
+#'   Version: \tab 0.3 \cr
+#'  Date: \tab 2021-12-18 \cr
 #' License: \tab GPL (>= 2) \cr
 #' LazyLoad: \tab yes
 #' }
@@ -28,7 +28,7 @@
 #' Hosmer D, Lemeshow S (2003).
 #' \emph{Applied logistic regression}, 2nd edition.
 #' New York: John Wiley & Sons, Inc.
-#' \href{http://dx.doi.org/10.1002/0471722146}{Wiley (paywall)},
+#' \doi{10.1002/0471722146}
 #' which is herein referred to as \bold{H&L 2nd ed.}
 #' \cr \cr
 #' For bug reports, feature requests or suggestions for improvement,
@@ -38,8 +38,8 @@
 #'
 #' @title Diagnostic Tests for Models with a Binomial Response
 #' @docType package
-#' @name logisticDx2-package
-#' @aliases logisticDx2
+#' @name logisticDx-package
+#' @aliases logisticDx
 #' @author Chris Dardis \email{christopherdardis@@gmail.com}
 #' @keywords package
 #' @concept diagnostics

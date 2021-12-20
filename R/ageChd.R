@@ -14,7 +14,7 @@
 #'  \item{ID}{Identification code. \eqn{1} to \eqn{100}.}
 #'  \item{age}{Age (years).}
 #'  \item{chd}{Evidence of coronary heart disease?
-#'             (\code{factor}):
+#'             (a \code{factor}):
 #'   \describe{
 #'    \item{0}{no}
 #'    \item{1}{yes}}}
@@ -26,8 +26,7 @@
 #' \code{\link{OR}}
 #'
 #' @source
-#' \href{ftp://ftp.wiley.com/public/sci_tech_med/logistic}{
-#'       Wiley FTP}
+#' Originally taken from \bold{H&L 2nd ed.} via their publishers site at ftp://ftp.wiley.com/public/sci_tech_med/logistic
 #' @references
 #' \bold{H&L 2nd ed.} Page 3, Table 1.1.
 NULL

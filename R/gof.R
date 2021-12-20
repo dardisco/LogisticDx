@@ -291,49 +291,42 @@ gof <- function(x, ...){
 #' with large degrees of freedom.
 #' \emph{Journal of the American Statistical Association}.
 #' \bold{87}(420):1145-52.
-#' \href{http://dx.doi.org/10.1080/01621459.1992.10476271}{
-#'       JASA (paywall)}.
-#' \cr
-#' JSTOR (free):
-#' \cr
-#' http://www.jstor.org/stable/2290653
+#' \doi{10.1080/01621459.1992.10476271}.
+#' Also available at JSTOR at https://www.jstor.org/stable/2290653
 #'
 #' @references Hosmer D, Hosmer T, Le Cessie S & Lemeshow S (1997).
 #' A comparison of goodness-of-fit tests for
 #' the logistic regression model.
 #' \emph{Statistics in Medicine}. \bold{16}(9):965-80.
-#' \href{dx.doi.org/10.1002/(SICI)1097-0258(19970515)16:9<965::AID-SIM509>3.0.CO;2-O}{
-#'       Wiley (paywall)}.
-#' \href{https://stat.duke.edu/~zo2/dropbox/goflogistic.pdf}{
-#'       Duke University (free)}.
+#' \doi{10.1002/(SICI)1097-0258(19970515)16:9<965::AID-SIM509>3.0.CO;2-O}
 #'
 #' @references Mittlboch M, Schemper M (1996).
 #' Explained variation for logistic regression.
 #' \emph{Statistics in Medicine}. \bold{15}(19):1987-97.
-#' \href{dx.doi.org/10.1002/(SICI)1097-0258(19961015)15:19<1987::AID-SIM318>3.0.CO;2-9}{
-#'       Wiley (paywall)}.
-#' \href{http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.477.3328&rep=rep1&type=pdf}{
-#'       CiteSeerX / Penn State University (free)}.
+#' \doi{10.1002/(SICI)1097-0258(19961015)15:19<1987::AID-SIM318>3.0.CO;2-9}
+#' Also available from \href{https://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.477.3328&rep=rep1&type=pdf}{CiteSeerX / Penn State University (free)}.
 #'
 #' @author Modified Hosmer & Lemeshow goodness of fit test:
 #' adapted from existing work by Yongmei Ni.
+#' \href{https://github.com/cran/LDdiag/blob/master/R/modifiedHL.R}{Code at github}.
 #' 
 #' @keywords htest
 #' 
 #' @examples
 #' ## H&L 2nd ed. Sections 5.2.2, 5.2.4, 5.2.5. Pages 147-167.
+#' \dontrun{
 #' data(uis)
-#' uis <- within(uis, {
-#'     NDRGFP1 <- 10 / (NDRGTX + 1)
-#'     NDRGFP2 <- NDRGFP1 * log((NDRGTX + 1) / 10)
-#' })
-#' g1 <- gof(glm(DFREE ~ AGE + NDRGFP1 + NDRGFP2 + IVHX +
+#' uis$NDRGFP1 <- 10 / (uis$NDRGTX + 1)
+#' uis$NDRGFP2 <- uis$NDRGFP1 * log((uis$NDRGTX + 1) / 10)
+#' g1 <- glm(DFREE ~ AGE + NDRGFP1 + NDRGFP2 + IVHX +
 #'               RACE + TREAT + SITE +
 #'               AGE:NDRGFP1 + RACE:SITE,
-#'               family=binomial, data=uis), plot=FALSE)
-#' g1
+#'               family=binomial, data=uis)
+#' gof(g1, plotROC=FALSE)
 #' unclass(g1)
 #' attributes(g1$gof)
+#' }
+
 gof.glm <- function(x, ..., g=10, plotROC=TRUE){
     stopifnot(inherits(x, "glm"))
     stopifnot(x$family$family=="binomial")

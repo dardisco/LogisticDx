@@ -34,7 +34,7 @@
 #'  'fill'/ 'background' colors for the plots.
 #' \cr
 #' The options are taken from
-#' \href{http://colorbrewer2.org/}{color_brewer}.
+#' \href{https://colorbrewer2.org/}{color_brewer}.
 #' \cr
 #' @param usePalette Use the colorscheme in palette above.
 #' \itemize{

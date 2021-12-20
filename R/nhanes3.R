@@ -27,11 +27,11 @@
 #'  \item{WTPFHX6}{Statistical weight.
 #'                 Range \eqn{225.93} to \eqn{139744.9}.}
 #'  \item{HSAGEIR}{Age (years).}
-#'  \item{HSSEX}{Gender (\code{factor}):
+#'  \item{HSSEX}{Gender (a \code{factor}):
 #'   \describe{
 #'    \item{0}{female}
 #'    \item{1}{male}}}
-#'  \item{DMARACER}{Race (\code{factor}):
+#'  \item{DMARACER}{Race (a \code{factor}):
 #'   \describe{
 #'    \item{1}{white}
 #'    \item{2}{black}
@@ -41,22 +41,22 @@
 #'  \item{PEPMNK1R}{Average Systolic BP.}
 #'  \item{PEPMNK5R}{Average Diastolic BP.}
 #'  \item{HAR1}{Has respondent smoked >100 cigarettes
-#'              in life (\code{factor}):
+#'              in life (a \code{factor}):
 #'   \describe{
 #'    \item{1}{yes}
 #'    \item{2}{no}}}
 #'  \item{HAR3}{Does respondent smoke cigarettes now?
-#'              (\code{factor}):
+#'              (a \code{factor}):
 #'   \describe{
 #'    \item{1}{yes}
 #'    \item{2}{no}}}
-#'  \item{SMOKE}{Smoking (\code{factor}):
+#'  \item{SMOKE}{Smoking (a \code{factor}):
 #'   \describe{
 #'    \item{1}{never (HAR1 = 2)}
 #'    \item{2}{>100 cigs (HAR1 = 1 & HAR3 = 2)}
 #'    \item{3}{current (HAR1 =1 & HAR3 = 1)}}}
 #'  \item{TCP}{Serum cholesterol (mg/100ml).}a
-#'  \item{HBP}{High blood pressure? (\code{factor}):
+#'  \item{HBP}{High blood pressure? (a \code{factor}):
 #'   \describe{
 #'    \item{1}{yes (PEPMNK1R > 140)}
 #'    \item{2}{no (PEPMNK1R <= 140)}}}
@@ -142,13 +142,13 @@
 #' names(nhanes3) <- n1
 #'
 #' @source
-#' \href{ftp://ftp.wiley.com/public/sci_tech_med/logistic}{Wiley FTP}
+#' Originally taken from \bold{H&L 2nd ed.} via their publishers site at ftp://ftp.wiley.com/public/sci_tech_med/logistic
 #' @references
 #' \bold{H&L 2nd ed.} Page 215. Table 6.3.
 #'
 #' National Center for Health Statistics (US) and others 1996.
 #' NHANES III reference manuals and reports.
 #' \emph{National Center for Health Statistics}.
-#' \href{http://www.cdc.gov/nchs/nhanes/nh3rrm.htm}{CDC (free)}
+#' \href{https://www.cdc.gov/nchs/nhanes/nh3rrm.htm}{CDC (free)}
 NULL
 

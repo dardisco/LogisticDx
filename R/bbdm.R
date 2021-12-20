@@ -16,17 +16,17 @@
 #' Columns are:
 #' \describe{
 #'  \item{STR}{stratum \eqn{1-50}).}
-#'  \item{OBS}{observation within stratum (\code{factor}):
+#'  \item{OBS}{observation within stratum (a \code{factor}):
 #'   \describe{
 #'    \item{1}{Case}
 #'    \item{2-4}{Control}}}
 #'  \item{AGMT}{Age (years) at interview.}
-#'  \item{FNDX}{Final diagnosis (\code{factor}):
+#'  \item{FNDX}{Final diagnosis (a \code{factor}):
 #'   \describe{
 #'    \item{0}{Control}
 #'    \item{1}{Case}}}
 #'  \item{HIGD}{Highest grade in school. \eqn{5-20}.}
-#'  \item{DEG}{Degree (\code{factor}):
+#'  \item{DEG}{Degree (a \code{factor}):
 #'   \describe{
 #'    \item{0}{none}
 #'    \item{1}{high_school}
@@ -34,7 +34,7 @@
 #'    \item{3}{college}
 #'    \item{4}{masters}
 #'    \item{5}{doctoral}}}
-#'  \item{CHK}{Regular medical checkups? (\code{factor}):
+#'  \item{CHK}{Regular medical checkups? (a \code{factor}):
 #'   \describe{
 #'    \item{1}{Yes}
 #'    \item{2}{No}}}
@@ -58,8 +58,7 @@
 #' @keywords datasets
 #'
 #' @source
-#' \href{ftp://ftp.wiley.com/public/sci_tech_med/logistic}{
-#'       Wiley FTP}
+#' Originally taken from the Wiley FTP at ftp://ftp.wiley.com/public/sci_tech_med/logistic
 #' @references
 #' Pastides H, Kelsey JL, LiVolsi VA, Holford TR,
 #' Fischer DB, Goldenberg IS 1983.
@@ -67,15 +66,13 @@
 #' with special reference to its histopathology.
 #' \emph{Journal of the National Cancer Institute}
 #' \bold{71}(1):5--9.
-#' \href{http://jnci.oxfordjournals.org/content/71/1/5.2}{
-#'       Oxford (paywall)}
+#' \doi{10.1093/jnci/71.1.5}
 #'
 #' Pastides H, Kelsey JL, Holford TR, LiVolsi VA 1985.
 #' The epidemiology of fibrocystic breast disease
 #' with special reference to its histopathology.
 #' \emph{American Journal of Epidemiology}
 #' \bold{121}(3):440--447.
-#' \href{http://aje.oxfordjournals.org/content/121/3/440}{
-#'       Oxford (paywall)}
+#' \doi{10.1093/oxfordjournals.aje.a114016}
 NULL
 

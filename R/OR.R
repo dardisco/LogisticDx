@@ -97,8 +97,10 @@ OR.default <- function(x, ...){
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' if(require("graphics")){
 #'     plot(x <- seq(from=0.1, to=0.9, by=0.05), y=OR(x))}
+#' }
 #' ## H&L 2nd ed. Table 1.3. Page 10.
 #' data(ageChd)
 #' summary(g1 <- glm(chd ~ age, data=ageChd, family=binomial))
